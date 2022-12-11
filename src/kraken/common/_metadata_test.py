@@ -1,4 +1,4 @@
-from kraken.utils._metadata import KrakenMetadata, metadata, metadata_capturing
+from kraken.common._metadata import KrakenMetadata, metadata, metadata_capturing
 
 
 def test_capture_kraken_metadata() -> None:
