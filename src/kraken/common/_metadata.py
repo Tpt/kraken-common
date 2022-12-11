@@ -15,12 +15,16 @@ class KrakenMetadata:
     index_url: "str | None" = None
     extra_index_urls: List[str] = field(default_factory=list)
     requirements: List[str] = field(default_factory=list)
+    additional_sys_paths: List[str] = field(default_factory=list)
 
     def requires(self, requirement: str) -> None:
         self.requirements.append(requirement)
 
     def extra_index_url(self, url: str) -> None:
         self.extra_index_urls.append(url)
+
+    def additional_sys_path(self, path: str) -> None:
+        self.additional_sys_paths.append(path)
 
 
 class KrakenMetadataException(BaseException):
@@ -55,6 +59,7 @@ def metadata(
     index_url: "str | None" = None,
     extra_index_urls: "Sequence[str] | None" = None,
     requirements: "Sequence[str] | None" = None,
+    additional_sys_paths: "Sequence[str] | None" = None,
 ) -> KrakenMetadata:
     """
     This function creates a :class:`KrakenMetadata` object and returns it. If :func:`get_metadata_mode` returns
@@ -66,6 +71,7 @@ def metadata(
         index_url=index_url,
         extra_index_urls=list(extra_index_urls or ()),
         requirements=list(requirements or ()),
+        additional_sys_paths=list(additional_sys_paths or ()),
     )
 
     if _metadata_mode.mode == MetadataMode.RAISE:
