@@ -12,6 +12,9 @@ __all__ = [
     # _generic
     "flatten",
     "not_none",
+    # _importlib
+    "import_class",
+    "appending_to_sys_path",
     # _metadata
     "metadata",
     "metadata_capturing",
