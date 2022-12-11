@@ -28,6 +28,8 @@ flake8 = "*"
 isort = "*"
 mypy = "*"
 pytest = "*"
+termcolor = "^2.1.1"
+types-termcolor = "^1.1.6"
 
 [tool.slap]
 typed = true

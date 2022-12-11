@@ -1,4 +1,5 @@
 from . import path
+from ._asciitable import AsciiTable
 from ._fs import atomic_file_swap, safe_rmpath
 from ._generic import flatten, not_none
 from ._metadata import KrakenMetadata, KrakenMetadataException, metadata, metadata_capturing
@@ -6,6 +7,8 @@ from ._terminal import get_terminal_width
 from ._text import inline_text, lazy_str, pluralize
 
 __all__ = [
+    # _asciitable
+    "AsciiTable",
     # _fs
     "atomic_file_swap",
     "safe_rmpath",
