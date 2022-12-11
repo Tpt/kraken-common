@@ -1,6 +1,7 @@
 from . import path
 from ._fs import atomic_file_swap, safe_rmpath
 from ._metadata import KrakenMetadata, KrakenMetadataException, metadata, metadata_capturing
+from ._terminal import get_terminal_width
 from ._text import inline_text, lazy_str, pluralize
 
 __all__ = [
@@ -12,6 +13,8 @@ __all__ = [
     "metadata_capturing",
     "KrakenMetadata",
     "KrakenMetadataException",
+    # _terminal
+    "get_terminal_width",
     # _text
     "pluralize",
     "inline_text",
