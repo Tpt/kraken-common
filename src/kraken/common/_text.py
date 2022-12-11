@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import re
 import textwrap
 import uuid
@@ -13,7 +11,7 @@ class SupportsLen(Protocol):
         ...
 
 
-def pluralize(word: str, count: int | SupportsLen) -> str:
+def pluralize(word: str, count: "int | SupportsLen") -> str:
     """
     Very naive implementation to pluralize english words (simply appends an s).
     """

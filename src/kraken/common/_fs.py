@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import contextlib
 import errno
 import os
@@ -13,7 +11,7 @@ from typing_extensions import Literal
 
 @overload
 def atomic_file_swap(
-    path: str | Path,
+    path: "str | Path",
     mode: Literal["w"],
     always_revert: bool = ...,
     create_dirs: bool = ...,
@@ -23,7 +21,7 @@ def atomic_file_swap(
 
 @overload
 def atomic_file_swap(
-    path: str | Path,
+    path: "str | Path",
     mode: Literal["wb"],
     always_revert: bool = ...,
     create_dirs: bool = ...,
@@ -33,7 +31,7 @@ def atomic_file_swap(
 
 @contextlib.contextmanager  # type: ignore
 def atomic_file_swap(
-    path: str | Path,
+    path: "str | Path",
     mode: Literal["w", "wb"],
     always_revert: bool = False,
     create_dirs: bool = False,

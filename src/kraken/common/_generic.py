@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Iterable, TypeVar
 
 __all__ = [
@@ -19,7 +17,7 @@ def flatten(it: Iterable[Iterable[T]]) -> Iterable[T]:
         yield from item
 
 
-def not_none(v: T | None, message: str = "expected not-None") -> T:
+def not_none(v: "T | None", message: str = "expected not-None") -> T:
     """
     Raise a :class:`RuntimeError` if *v* is `None`, otherwise return *v*.
     """
