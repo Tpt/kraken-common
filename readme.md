@@ -25,9 +25,9 @@ When the build script is executed by the Kraken build system instead, the functi
 The API to capture the data passed to a call to the `metadata()` function is as follows:
 
 ```py
-from kraken.common import metadata_capturing
+from kraken.common import KrakenMetadata
 
-with metadata_capturing() as metadata_future:
+with KrakenMetadata.capture() as metadata_future:
     ...
 
 metadata = metadata_future.result()

@@ -4,7 +4,7 @@ from ._date import datetime_to_iso8601, iso8601_to_datetime
 from ._environment import KrakenEnvironmentType
 from ._fs import atomic_file_swap, safe_rmpath
 from ._generic import NotSet, flatten, not_none
-from ._metadata import KrakenMetadata, KrakenMetadataException, metadata, metadata_capturing
+from ._metadata import KrakenMetadata, KrakenMetadataException, metadata
 from ._requirements import LocalRequirement, PipRequirement, Requirement, RequirementSpec, parse_requirement
 from ._terminal import get_terminal_width
 from ._text import inline_text, lazy_str, pluralize
@@ -29,7 +29,6 @@ __all__ = [
     "appending_to_sys_path",
     # _metadata
     "metadata",
-    "metadata_capturing",
     "KrakenMetadata",
     "KrakenMetadataException",
     # _requirements

@@ -26,6 +26,27 @@ class KrakenMetadata:
     def additional_sys_path(self, path: str) -> None:
         self.additional_sys_paths.append(path)
 
+    @staticmethod
+    @contextmanager
+    def capture() -> Iterator["Future[KrakenMetadata]"]:
+        """
+        A context manager that will ensure calling :func:`metadata` will raise a :class:`KrakenMetadataException` and
+        catch that exception to return the metadata.
+        """
+
+        future: "Future[KrakenMetadata]" = Future()
+        _metadata_mode.mode = MetadataMode.RAISE
+        try:
+            yield future
+        except KrakenMetadataException as exc:
+            future.set_result(exc.metadata)
+        else:
+            exception = RuntimeError("No KrakenMetadataException was raised, did metadata() get called?")
+            future.set_exception(exception)
+            raise exception
+        finally:
+            _metadata_mode.mode = MetadataMode.PASSTHROUGH
+
 
 class KrakenMetadataException(BaseException):
     """
@@ -78,24 +99,3 @@ def metadata(
         raise KrakenMetadataException(metadata)
 
     return metadata
-
-
-@contextmanager
-def metadata_capturing() -> Iterator["Future[KrakenMetadata]"]:
-    """
-    A context manager that will ensure calling :func:`metadata` will raise a :class:`KrakenMetadataException` and
-    catch that exception to return the metadata.
-    """
-
-    future: "Future[KrakenMetadata]" = Future()
-    _metadata_mode.mode = MetadataMode.RAISE
-    try:
-        yield future
-    except KrakenMetadataException as exc:
-        future.set_result(exc.metadata)
-    else:
-        exception = RuntimeError("No KrakenMetadataException was raised, did metadata() get called?")
-        future.set_exception(exception)
-        raise exception
-    finally:
-        _metadata_mode.mode = MetadataMode.PASSTHROUGH
