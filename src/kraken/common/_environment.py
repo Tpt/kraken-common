@@ -16,16 +16,23 @@ class KrakenEnvironmentType(enum.Enum):
     VENV = 1
 
     #: Wrapper, using a PEX file.
-    PEX_FILE = 2
+    PEX_ZIPAPP = 2
+
+    #: Wrapper, using a packed PEX environment.
+    PEX_PACKED = 3
 
     #: Wrapper, using a loose PEX environment.
-    PEX_LOOSE = 3
+    PEX_LOOSE = 4
 
     def is_native(self) -> bool:
         return self == KrakenEnvironmentType.NATIVE
 
     def is_pex(self) -> bool:
-        return self in (KrakenEnvironmentType.PEX_FILE, KrakenEnvironmentType.PEX_LOOSE)
+        return self in (
+            KrakenEnvironmentType.PEX_ZIPAPP,
+            KrakenEnvironmentType.PEX_PACKED,
+            KrakenEnvironmentType.PEX_LOOSE,
+        )
 
     def is_venv(self) -> bool:
         return self == KrakenEnvironmentType.VENV
