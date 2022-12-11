@@ -81,13 +81,13 @@ def metadata(
 
 
 @contextmanager
-def metadata_capturing() -> Iterator[Future[KrakenMetadata]]:
+def metadata_capturing() -> Iterator["Future[KrakenMetadata]"]:
     """
     A context manager that will ensure calling :func:`metadata` will raise a :class:`KrakenMetadataException` and
     catch that exception to return the metadata.
     """
 
-    future = Future[KrakenMetadata]()
+    future: "Future[KrakenMetadata]" = Future()
     _metadata_mode.mode = MetadataMode.RAISE
     try:
         yield future
