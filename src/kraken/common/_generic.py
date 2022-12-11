@@ -1,3 +1,4 @@
+import enum
 from typing import Iterable, TypeVar
 
 __all__ = [
@@ -25,3 +26,7 @@ def not_none(v: "T | None", message: str = "expected not-None") -> T:
     if v is None:
         raise RuntimeError(message)
     return v
+
+
+class NotSet(enum.Enum):
+    Value = 1
