@@ -3,11 +3,11 @@ import datetime
 DATETIME_FORMATS = ["%Y-%m-%dT%H:%M:%S.%f%z", "%Y-%m-%dT%H:%M:%S.%f"]
 
 
-def date_to_iso8601(dt: datetime.datetime) -> str:
+def datetime_to_iso8601(dt: datetime.datetime) -> str:
     return dt.strftime(DATETIME_FORMATS[0])
 
 
-def iso8601_to_date(value: str) -> datetime.datetime:
+def iso8601_to_datetime(value: str) -> datetime.datetime:
     err: "ValueError | None" = None
     for fmt in DATETIME_FORMATS:
         try:

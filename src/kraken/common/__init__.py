@@ -1,5 +1,6 @@
 from . import path
 from ._asciitable import AsciiTable
+from ._date import datetime_to_iso8601, iso8601_to_datetime
 from ._environment import KrakenEnvironmentType
 from ._fs import atomic_file_swap, safe_rmpath
 from ._generic import NotSet, flatten, not_none
@@ -11,6 +12,9 @@ from ._text import inline_text, lazy_str, pluralize
 __all__ = [
     # _asciitable
     "AsciiTable",
+    # _date
+    "datetime_to_iso8601",
+    "iso8601_to_datetime",
     # _environment
     "KrakenEnvironmentType",
     # _fs
