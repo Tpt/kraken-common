@@ -23,7 +23,7 @@ class KrakenMetadata:
         self.extra_index_urls.append(url)
 
 
-class KrakenMetadataException(Exception):
+class KrakenMetadataException(BaseException):
     """
     This exception is raised by the :func:`metadata` function.
     """
