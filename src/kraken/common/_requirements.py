@@ -3,8 +3,9 @@ import argparse
 import dataclasses
 import hashlib
 import re
+import shlex
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Tuple
+from typing import Any, Dict, Iterable, List, TextIO, Tuple
 
 from kraken.common import NotSet, flatten
 
@@ -191,3 +192,45 @@ class RequirementSpec:
         hash_parts = [str(req) for req in self.requirements] + ["::pythonpath"] + list(self.pythonpath)
         hash_parts += ["::interpreter_constraint", self.interpreter_constraint or ""]
         return hashlib.new(algorithm, ":".join(hash_parts).encode()).hexdigest()
+
+
+def parse_requirements_from_python_script(file: TextIO) -> RequirementSpec:
+    """
+    Parses the requirements defined in a Python script.
+
+    The Pip install arguments are extracted from all lines in the first single-line comment block, which has to start
+    at the beginning of the file, which start with the text `# ::requirements` (whitespace optional). Additionally,
+    paths to ass to `sys.path` can be specified with `# ::pythonpath`.
+
+    Example:
+
+    ```py
+    #!/usr/bin/env python
+    # :: requirements PyYAML
+    # :: pythonpath ./build-support
+    ```
+
+    The resulting :class:`RequirementSpec` will contain `["PyYAML"]` as requirement and `"./build-support"` ain
+    the Python path.
+
+    !!! note
+
+        This function is deprecated and is only kept for backwards compatibility, allowing Kraken wrapper to
+        continue to support Kraken build scripts using the old requirements schema.
+    """
+
+    requirements = []
+    pythonpath = []
+    for line in map(str.rstrip, file):
+        if not line.startswith("#"):
+            break
+        match = re.match(r"#\s*::\s*(requirements|pythonpath)(.+)", line)
+        if not match:
+            break
+        args = shlex.split(match.group(2))
+        if match.group(1) == "requirements":
+            requirements += args
+        else:
+            pythonpath += args
+
+    return RequirementSpec.from_args(requirements).with_pythonpath(pythonpath)
