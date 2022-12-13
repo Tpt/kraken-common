@@ -1,10 +1,10 @@
 from . import path
 from ._asciitable import AsciiTable
+from ._buildscript import BuildscriptMetadata, BuildscriptMetadataException, buildscript
 from ._date import datetime_to_iso8601, iso8601_to_datetime
 from ._environment import KrakenEnvironmentType
 from ._fs import atomic_file_swap, safe_rmpath
 from ._generic import NotSet, flatten, not_none
-from ._metadata import KrakenMetadata, KrakenMetadataException, metadata
 from ._requirements import LocalRequirement, PipRequirement, Requirement, RequirementSpec, parse_requirement
 from ._terminal import get_terminal_width
 from ._text import inline_text, lazy_str, pluralize
@@ -27,10 +27,10 @@ __all__ = [
     # _importlib
     "import_class",
     "appending_to_sys_path",
-    # _metadata
-    "metadata",
-    "KrakenMetadata",
-    "KrakenMetadataException",
+    # _buildscript
+    "buildscript",
+    "BuildscriptMetadata",
+    "BuildscriptMetadataException",
     # _requirements
     "parse_requirement",
     "Requirement",

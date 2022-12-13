@@ -11,9 +11,9 @@ file (lock file). The build script at the root of a project may contain hints fo
 CLI to be able to correctly bootstrap an environment that contains the Kraken build system.
 
 ```py
-from kraken.common import metadata
+from kraken.common import buildscript
 
-metadata(
+buildscript(
     requirements=["kraken-std ^0.4.16"],
 )
 ```
