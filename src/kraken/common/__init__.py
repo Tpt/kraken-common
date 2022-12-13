@@ -6,6 +6,7 @@ from ._environment import EnvironmentType
 from ._fs import atomic_file_swap, safe_rmpath
 from ._generic import NotSet, flatten, not_none
 from ._importlib import appending_to_sys_path, import_class
+from ._option_sets import LoggingOptions
 from ._requirements import (
     LocalRequirement,
     PipRequirement,
@@ -48,6 +49,8 @@ __all__ = [
     "buildscript",
     "BuildscriptMetadata",
     "BuildscriptMetadataException",
+    # _option_sets
+    "LoggingOptions",
     # _requirements
     "parse_requirement",
     "Requirement",
