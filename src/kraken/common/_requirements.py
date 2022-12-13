@@ -2,12 +2,18 @@ import abc
 import argparse
 import dataclasses
 import hashlib
+import logging
 import re
 import shlex
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, TextIO, Tuple
 
-from kraken.common import NotSet, flatten
+from ._buildscript import BuildscriptMetadata
+from ._generic import NotSet, flatten
+
+logger = logging.getLogger(__name__)
+DEFAULT_BUILD_SUPPORT_FOLDER = "build-support"
+DEFAULT_INTERPRETER_CONSTRAINT = ">=3.7"
 
 
 def parse_requirement(value: str) -> "PipRequirement | LocalRequirement":
@@ -193,8 +199,26 @@ class RequirementSpec:
         hash_parts += ["::interpreter_constraint", self.interpreter_constraint or ""]
         return hashlib.new(algorithm, ":".join(hash_parts).encode()).hexdigest()
 
+    @classmethod
+    def from_metadata(cls, metadata: BuildscriptMetadata) -> "RequirementSpec":
+        return RequirementSpec(
+            requirements=tuple(map(parse_requirement, metadata.requirements)),
+            index_url=metadata.index_url,
+            extra_index_urls=tuple(metadata.extra_index_urls),
+            interpreter_constraint=DEFAULT_INTERPRETER_CONSTRAINT,
+            pythonpath=tuple(metadata.additional_sys_paths) + (DEFAULT_BUILD_SUPPORT_FOLDER,),
+        )
 
-def parse_requirements_from_python_script(file: TextIO) -> "RequirementSpec | None":
+    def to_metadata(self) -> BuildscriptMetadata:
+        return BuildscriptMetadata(
+            index_url=self.index_url,
+            extra_index_urls=list(self.extra_index_urls),
+            requirements=[str(x) for x in self.requirements],
+            additional_sys_paths=[x for x in self.pythonpath if x != DEFAULT_BUILD_SUPPORT_FOLDER],
+        )
+
+
+def deprecated_get_requirement_spec_from_file_header(file: "TextIO | Path") -> "RequirementSpec | None":
     """
     Parses the requirements defined in a Python script.
 
@@ -207,7 +231,7 @@ def parse_requirements_from_python_script(file: TextIO) -> "RequirementSpec | No
     ```py
     #!/usr/bin/env python
     # :: requirements PyYAML
-    # :: pythonpath ./build-support
+    # :: pythonpath path/to/folder
     ```
 
     The resulting :class:`RequirementSpec` will contain `["PyYAML"]` as requirement and `"./build-support"` ain
@@ -218,6 +242,10 @@ def parse_requirements_from_python_script(file: TextIO) -> "RequirementSpec | No
         This function is deprecated and is only kept for backwards compatibility, allowing Kraken wrapper to
         continue to support Kraken build scripts using the old requirements schema.
     """
+
+    if isinstance(file, Path):
+        with file.open("r") as fp:
+            return deprecated_get_requirement_spec_from_file_header(fp)
 
     requirements = []
     pythonpath = []
@@ -234,6 +262,10 @@ def parse_requirements_from_python_script(file: TextIO) -> "RequirementSpec | No
             pythonpath += args
 
     if requirements or pythonpath:
-        return RequirementSpec.from_args(requirements).with_pythonpath(pythonpath)
+        return (
+            RequirementSpec.from_args(requirements)
+            .with_pythonpath(pythonpath)
+            .with_pythonpath(DEFAULT_BUILD_SUPPORT_FOLDER)
+        )
 
     return None

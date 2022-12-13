@@ -12,8 +12,8 @@ from ._requirements import (
     PipRequirement,
     Requirement,
     RequirementSpec,
+    deprecated_get_requirement_spec_from_file_header,
     parse_requirement,
-    parse_requirements_from_python_script,
 )
 from ._runner import (
     BuildDslScriptRunner,
@@ -57,7 +57,7 @@ __all__ = [
     "LocalRequirement",
     "PipRequirement",
     "RequirementSpec",
-    "parse_requirements_from_python_script",
+    "deprecated_get_requirement_spec_from_file_header",
     # _runner
     "ScriptRunner",
     "ScriptFinder",
