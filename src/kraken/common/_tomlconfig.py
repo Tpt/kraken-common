@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from pathlib import Path
-from typing import Any, Iterator, MutableMapping
+from typing import Any, Dict, Iterator, MutableMapping
 
 import tomli
 import tomli_w
@@ -14,9 +12,9 @@ class TomlConfigFile(MutableMapping[str, Any]):
 
     def __init__(self, path: Path) -> None:
         self.path = path
-        self._data: dict[str, Any] | None = None
+        self._data: "Dict[str, Any] | None" = None
 
-    def _get_data(self) -> dict[str, Any]:
+    def _get_data(self) -> "Dict[str, Any]":
         if self._data is None:
             if self.path.is_file():
                 self._data = tomli.loads(self.path.read_text())
