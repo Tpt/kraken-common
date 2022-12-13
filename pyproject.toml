@@ -23,6 +23,7 @@ keywords = []
 python = "^3.6"
 builddsl = "^1.0.0"
 dataclasses = { version = "^0.6", python = "<3.7" }
+setuptools = "*"
 typing-extensions = ">=3.0.0.0"
 
 # Allow older versions for Python 3.6 compatibility.
@@ -36,8 +37,9 @@ isort = "*"
 mypy = "*"
 pytest = "*"
 termcolor = "*"
-types-termcolor = "*"
 types-dataclasses = { version = "^0.6.6", python = "<3.7" }
+types-setuptools = "*"
+types-termcolor = "*"
 
 [tool.slap]
 typed = true
