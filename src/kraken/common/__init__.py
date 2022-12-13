@@ -24,6 +24,7 @@ from ._runner import (
 )
 from ._terminal import get_terminal_width
 from ._text import inline_text, lazy_str, pluralize
+from ._tomlconfig import TomlConfigFile
 
 __all__ = [
     # _asciitable
@@ -67,6 +68,8 @@ __all__ = [
     "pluralize",
     "inline_text",
     "lazy_str",
+    # _tomlconfig
+    "TomlConfigFile",
     # global
     "path",
 ]
