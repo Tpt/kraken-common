@@ -3,7 +3,7 @@ from concurrent.futures import Future
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from threading import local
-from typing import Iterator, List, Sequence
+from typing import Any, Callable, Iterator, List, Sequence
 
 import builddsl
 
@@ -32,8 +32,10 @@ class BuildscriptMetadata:
     @contextmanager
     def capture() -> Iterator["Future[BuildscriptMetadata]"]:
         """
-        A context manager that will ensure calling :func:`metadata` will raise a :class:`KrakenMetadataException` and
-        catch that exception to return the metadata.
+        A context manager that will ensure calling :func:`buildscript` will raise a
+        :class:`BuildscriptMetadataException` and catch that exception to return the metadata.
+
+        This is used to retrieve the metadata in Kraken wrapper.
         """
 
         future: "Future[BuildscriptMetadata]" = Future()
@@ -48,6 +50,23 @@ class BuildscriptMetadata:
             raise exception
         finally:
             _global.mode = _Mode.PASSTHROUGH
+
+    @staticmethod
+    @contextmanager
+    def callback(func: Callable[["BuildscriptMetadata"], Any]) -> Iterator[None]:
+        """
+        A context manager that will ensure calling the given *func* after :func:`buildscript` is run.
+
+        This is used to retrieve and react upon the metadata in the Kraken build system.
+        """
+
+        _global.mode = _Mode.CALLBACK
+        _global.func = func
+        try:
+            yield
+        finally:
+            _global.mode = _Mode.PASSTHROUGH
+            _global.func = None
 
 
 class BuildscriptMetadataException(BaseException):
@@ -68,10 +87,12 @@ class BuildscriptMetadataException(BaseException):
 class _Mode(enum.Enum):
     PASSTHROUGH = 0
     RAISE = 1
+    CALLBACK = 1
 
 
 class _ModeGlobal(local):
     mode: _Mode = _Mode.PASSTHROUGH
+    func: "Callable[[BuildscriptMetadata], Any] | None" = None
 
 
 _global = _ModeGlobal()
@@ -104,5 +125,8 @@ def buildscript(
 
     if _global.mode == _Mode.RAISE:
         raise BuildscriptMetadataException(metadata)
+    elif _global.mode == _Mode.CALLBACK:
+        assert _global.func is not None
+        _global.func(metadata)
 
     return metadata
