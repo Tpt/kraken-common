@@ -3,6 +3,7 @@ Implements build script runners.
 """
 
 import re
+import types
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any, Dict, Iterator, Sequence, Tuple
@@ -70,8 +71,11 @@ class PythonScriptRunner(ScriptFinder):
         super().__init__(filenames)
 
     def execute_script(self, script: Path, scope: Dict[str, Any]) -> None:
+        module = types.ModuleType(str(script.parent))
+        module.__file__ = str(script)
+
         code = compile(script.read_text(), script, "exec")
-        exec(code, scope)
+        exec(code, vars(module))
 
     def has_buildscript_call(self, script: Path) -> bool:
         code = script.read_text()

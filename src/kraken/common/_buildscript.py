@@ -87,7 +87,7 @@ class BuildscriptMetadataException(BaseException):
 class _Mode(enum.Enum):
     PASSTHROUGH = 0
     RAISE = 1
-    CALLBACK = 1
+    CALLBACK = 2
 
 
 class _ModeGlobal(local):
