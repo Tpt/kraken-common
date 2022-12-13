@@ -2,7 +2,7 @@ from . import path
 from ._asciitable import AsciiTable
 from ._buildscript import BuildscriptMetadata, BuildscriptMetadataException, buildscript
 from ._date import datetime_to_iso8601, iso8601_to_datetime
-from ._environment import KrakenEnvironmentType
+from ._environment import EnvironmentType
 from ._fs import atomic_file_swap, safe_rmpath
 from ._generic import NotSet, flatten, not_none
 from ._requirements import (
@@ -23,7 +23,7 @@ __all__ = [
     "datetime_to_iso8601",
     "iso8601_to_datetime",
     # _environment
-    "KrakenEnvironmentType",
+    "EnvironmentType",
     # _fs
     "atomic_file_swap",
     "safe_rmpath",
