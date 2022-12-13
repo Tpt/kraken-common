@@ -21,7 +21,7 @@ keywords = []
 
 [tool.poetry.dependencies]
 python = "^3.6"
-builddsl = "^0.9.0"
+builddsl = "^1.0.0"
 dataclasses = { version = "^0.6", python = "<3.7" }
 typing-extensions = ">=3.0.0.0"
 
