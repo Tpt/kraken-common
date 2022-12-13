@@ -5,6 +5,7 @@ from ._date import datetime_to_iso8601, iso8601_to_datetime
 from ._environment import EnvironmentType
 from ._fs import atomic_file_swap, safe_rmpath
 from ._generic import NotSet, flatten, not_none
+from ._importlib import import_class, appending_to_sys_path
 from ._requirements import (
     LocalRequirement,
     PipRequirement,
