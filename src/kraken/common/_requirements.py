@@ -194,7 +194,7 @@ class RequirementSpec:
         return hashlib.new(algorithm, ":".join(hash_parts).encode()).hexdigest()
 
 
-def parse_requirements_from_python_script(file: TextIO) -> RequirementSpec | None:
+def parse_requirements_from_python_script(file: TextIO) -> "RequirementSpec | None":
     """
     Parses the requirements defined in a Python script.
 

@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from threading import local
 from typing import Iterator, List, Sequence
 
+import builddsl
+
 
 @dataclass
 class BuildscriptMetadata:
@@ -76,6 +78,7 @@ _global = _ModeGlobal()
 
 
 def buildscript(
+    closure: "builddsl.UnboundClosure | None" = None,
     *,
     index_url: "str | None" = None,
     extra_index_urls: "Sequence[str] | None" = None,
@@ -95,6 +98,9 @@ def buildscript(
         requirements=list(requirements or ()),
         additional_sys_paths=list(additional_sys_paths or ()),
     )
+
+    if closure:
+        closure(metadata)
 
     if _global.mode == _Mode.RAISE:
         raise BuildscriptMetadataException(metadata)
