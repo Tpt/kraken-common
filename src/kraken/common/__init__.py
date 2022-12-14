@@ -1,4 +1,5 @@
 from . import path
+from ._argparse import propagate_argparse_formatter_to_subparser
 from ._asciitable import AsciiTable
 from ._buildscript import BuildscriptMetadata, BuildscriptMetadataException, buildscript
 from ._date import datetime_to_iso8601, iso8601_to_datetime
@@ -28,6 +29,8 @@ from ._text import inline_text, lazy_str, pluralize
 from ._tomlconfig import TomlConfigFile
 
 __all__ = [
+    # _argparse
+    "propagate_argparse_formatter_to_subparser",
     # _asciitable
     "AsciiTable",
     # _date
