@@ -103,7 +103,7 @@ class PythonScriptRunner(ScriptFinder):
             else:
                 code += "\n    requirements=["
                 for req in metadata.requirements:
-                    code += f"        {req!r},"
+                    code += f"\n        {req!r},"
                 code += "\n    ],"
         if not code.endswith("("):
             code += "\n"
