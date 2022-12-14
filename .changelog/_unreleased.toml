@@ -1,0 +1,5 @@
+[[entries]]
+id = "6e0771a0-a340-48f8-a058-5ac5c1035b58"
+type = "fix"
+description = "add bad but backwards compatible ISO8601 format for parsing timestamps"
+author = "@NiklasRosenstein"
