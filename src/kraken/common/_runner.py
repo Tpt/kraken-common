@@ -5,12 +5,27 @@ Implements build script runners.
 import re
 import types
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterator, Sequence, Tuple
+from typing import Any, Dict, Iterable, Iterator, NamedTuple, Sequence, Tuple
 
 import builddsl
 
 from ._buildscript import BuildscriptMetadata, buildscript
+
+##
+# Data classes
+##
+
+
+class ProjectInfo(NamedTuple):
+    path: Path
+    runner: "ScriptRunner"
+
+
+##
+# Interfaces
+##
 
 
 class ScriptRunner(ABC):
@@ -46,9 +61,24 @@ class ScriptRunner(ABC):
         raise NotImplementedError(self)
 
 
-class ScriptFinder(ScriptRunner):
+class ProjectFinder(ABC):
     """
-    Base class for finding script files in a directory based on a few criteria.
+    Base class for finding a Kraken project starting from any directory.
+    """
+
+    @abstractmethod
+    def find_project(self, directory: Path) -> "ProjectInfo | None":
+        ...
+
+
+##
+# ScriptRunner Implementations
+##
+
+
+class ScriptPicker(ScriptRunner):
+    """
+    Base class for picking the right script file in a directory based on a few criteria.
     """
 
     def __init__(self, filenames: Sequence[str]) -> None:
@@ -62,12 +92,17 @@ class ScriptFinder(ScriptRunner):
         return None
 
 
-class PythonScriptRunner(ScriptFinder):
+class PythonScriptRunner(ScriptPicker):
     """
-    A finder and runner for Python based Kraken build scripts called `kraken.py` (optionally prefixed with `.`).
+    A finder and runner for Python based Kraken build scripts called `.kraken.py`.
+
+    !!! note
+
+        We can't call the script `kraken.py` (without the leading dot), as otherwise under most circumstances the
+        script will try to import itself when doing `import kraken` or `from kraken import ...`.
     """
 
-    def __init__(self, filenames: Sequence[str] = ("kraken.py", ".kraken.py")) -> None:
+    def __init__(self, filenames: Sequence[str] = (".kraken.py",)) -> None:
         super().__init__(filenames)
 
     def execute_script(self, script: Path, scope: Dict[str, Any]) -> None:
@@ -111,7 +146,7 @@ class PythonScriptRunner(ScriptFinder):
         return code
 
 
-class BuildDslScriptRunner(ScriptFinder):
+class BuildDslScriptRunner(ScriptPicker):
     """
     A finder and runner for BuildDSL based Kraken build scripts called `kraken.build` (optionally prefixed with `.`).
     """
@@ -144,24 +179,75 @@ class BuildDslScriptRunner(ScriptFinder):
         return code
 
 
-def iter_script_runners() -> Iterator[ScriptRunner]:
-    """
-    Iterate over all available script runners.
-    """
-
-    yield PythonScriptRunner()
-    yield BuildDslScriptRunner()
+##
+# ProjectFinder Implementations
+##
 
 
-def find_build_script(directory: Path) -> "Tuple[ScriptRunner, Path] | Tuple[None, None]":
+class CurrentDirectoryProjectFinder(ProjectFinder):
     """
-    Searches for a supported build script in the given *directory* and returns the matching :class:`ScriptRunner`
-    and filename.
+    Goes through a list of script finders and returns the first one matching.
     """
 
-    for runner in iter_script_runners():
-        script = runner.find_script(directory)
-        if script is not None:
-            return runner, script
+    def __init__(self, script_runners: Iterable[ScriptRunner]) -> None:
+        self.script_runners = list(script_runners)
 
-    return None, None
+    def find_project(self, directory: Path) -> "ProjectInfo | None":
+        for runner in self.script_runners:
+            script = runner.find_script(directory)
+            if script is not None:
+                return runner, script
+
+        return None
+
+    @classmethod
+    def default(cls) -> "CurrentDirectoryProjectFinder":
+        """
+        Returns the default instance that contains the known :class:`ScriptRunner` implementations.
+        """
+
+        return cls(
+            (
+                PythonScriptRunner(),
+                BuildDslScriptRunner(),
+            )
+        )
+
+
+class GitAwareProjectFinder(ProjectFinder):
+    """
+    Finds the root of a project by picking the highest-up build script that does not cross a Git repository boundary
+    or a home directory boundary.
+    """
+
+    def __init__(self, delegate: ProjectFinder, home_boundary: "Path | None" = None) -> None:
+        self.delegate = delegate
+        self.home_boundary = home_boundary or Path("~").expanduser().parent.absolute()
+
+    def find_project(self, directory: Path) -> "ProjectInfo | None":
+        highest_script: ProjectInfo | None = None
+        directory = directory.absolute()
+        while directory != Path(directory.root):
+            # If we're in any directory that could be a home directory, we stop searching.
+            if directory.parent == self.home_boundary:
+                break
+
+            script = self.delegate.find_project(directory)
+            if script is not None:
+                highest_script = script
+
+            # If in the next loop we would cross a Git repository boundary, we stop searching.
+            if (directory / ".git").exists():
+                break
+
+            directory = directory.parent
+
+        return highest_script
+
+    @classmethod
+    def default(cls) -> "GitAwareProjectFinder":
+        """
+        Returns the default instance that contains a default :class:`CurrentDirectoryProjectFinder`.
+        """
+
+        return cls(CurrentDirectoryProjectFinder.default())

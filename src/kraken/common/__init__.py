@@ -18,11 +18,13 @@ from ._requirements import (
 )
 from ._runner import (
     BuildDslScriptRunner,
+    CurrentDirectoryProjectFinder,
+    GitAwareProjectFinder,
+    ProjectFinder,
+    ProjectInfo,
     PythonScriptRunner,
-    ScriptFinder,
+    ScriptPicker,
     ScriptRunner,
-    find_build_script,
-    iter_script_runners,
 )
 from ._terminal import get_terminal_width
 from ._text import inline_text, lazy_str, pluralize
@@ -62,12 +64,14 @@ __all__ = [
     "RequirementSpec",
     "deprecated_get_requirement_spec_from_file_header",
     # _runner
-    "ScriptRunner",
-    "ScriptFinder",
-    "PythonScriptRunner",
     "BuildDslScriptRunner",
-    "iter_script_runners",
-    "find_build_script",
+    "CurrentDirectoryProjectFinder",
+    "GitAwareProjectFinder",
+    "ProjectFinder",
+    "ProjectInfo",
+    "PythonScriptRunner",
+    "ScriptPicker",
+    "ScriptRunner",
     # _terminal
     "get_terminal_width",
     # _text

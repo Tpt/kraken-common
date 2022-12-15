@@ -6,7 +6,13 @@ from typing import Iterator
 from pytest import fixture
 
 from kraken.common._buildscript import BuildscriptMetadata
-from kraken.common._runner import BuildDslScriptRunner, PythonScriptRunner
+from kraken.common._generic import not_none
+from kraken.common._runner import (
+    BuildDslScriptRunner,
+    CurrentDirectoryProjectFinder,
+    GitAwareProjectFinder,
+    PythonScriptRunner,
+)
 
 
 @fixture
@@ -54,3 +60,42 @@ def test__BuildDslScriptRunner__can_find_and_execute_script(tempdir: Path) -> No
         runner.execute_script(script, {})
 
     assert metadata_future.result() == BuildscriptMetadata(requirements=["kraken-std"])
+
+
+def test__GitAwareProjectFinder__finds_highest_script(tempdir: Path) -> None:
+    finder = GitAwareProjectFinder(CurrentDirectoryProjectFinder([PythonScriptRunner()]))
+
+    (tempdir / "foo" / "bar").mkdir(parents=True)
+    (tempdir / "foo" / ".kraken.py").write_text("")
+    (tempdir / ".kraken.py").write_text("")  # <<< result
+
+    _, script = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
+    assert script == tempdir / ".kraken.py"
+
+
+def test__GitAwareProjectFinder__finds_highest_script_but_does_not_cross_home_boundary(tempdir: Path) -> None:
+    finder = GitAwareProjectFinder(CurrentDirectoryProjectFinder([PythonScriptRunner()]), home_boundary=tempdir)
+
+    # With the home_boundary set to tempdir, it will not pick scripts in any directory directly inside of tempdir,
+    # e.g. tempdir/foo/.kraken.py is off-limits.
+
+    (tempdir / "foo" / "bar").mkdir(parents=True)
+    (tempdir / "foo" / "bar" / ".kraken.py").write_text("")  # <<< result
+    (tempdir / "foo" / ".kraken.py").write_text("")
+    (tempdir / ".kraken.py").write_text("")
+
+    _, script = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
+    assert script == tempdir / "foo" / "bar" / ".kraken.py"
+
+
+def test__GitAwareProjectFinder__finds_highest_script_but_does_not_cross_git(tempdir: Path) -> None:
+    finder = GitAwareProjectFinder(CurrentDirectoryProjectFinder([PythonScriptRunner()]))
+
+    (tempdir / "foo" / "bar").mkdir(parents=True)
+    (tempdir / "foo" / "bar" / ".kraken.py").write_text("")
+    (tempdir / "foo" / ".kraken.py").write_text("")  # <<< result
+    (tempdir / "foo" / ".git").write_text("")
+    (tempdir / ".kraken.py").write_text("")
+
+    _, script = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
+    assert script == tempdir / "foo" / ".kraken.py"
