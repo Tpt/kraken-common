@@ -18,7 +18,7 @@ from ._buildscript import BuildscriptMetadata, buildscript
 
 
 class ProjectInfo(NamedTuple):
-    path: Path
+    script: Path
     runner: "ScriptRunner"
 
 
