@@ -22,7 +22,7 @@ def tempdir() -> Iterator[Path]:
 
 
 def test__PythonScriptRunner__can_find_and_execute_script(tempdir: Path) -> None:
-    (tempdir / "kraken.py").write_text(
+    (tempdir / ".kraken.py").write_text(
         dedent(
             """
         from kraken.common import buildscript
@@ -69,7 +69,7 @@ def test__GitAwareProjectFinder__finds_highest_script(tempdir: Path) -> None:
     (tempdir / "foo" / ".kraken.py").write_text("")
     (tempdir / ".kraken.py").write_text("")  # <<< result
 
-    _, script = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
+    script, _ = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
     assert script == tempdir / ".kraken.py"
 
 
@@ -84,7 +84,7 @@ def test__GitAwareProjectFinder__finds_highest_script_but_does_not_cross_home_bo
     (tempdir / "foo" / ".kraken.py").write_text("")
     (tempdir / ".kraken.py").write_text("")
 
-    _, script = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
+    script, _ = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
     assert script == tempdir / "foo" / "bar" / ".kraken.py"
 
 
@@ -97,5 +97,5 @@ def test__GitAwareProjectFinder__finds_highest_script_but_does_not_cross_git(tem
     (tempdir / "foo" / ".git").write_text("")
     (tempdir / ".kraken.py").write_text("")
 
-    _, script = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
+    script, _ = not_none(finder.find_project(directory=tempdir / "foo" / "bar"))
     assert script == tempdir / "foo" / ".kraken.py"

@@ -5,9 +5,8 @@ Implements build script runners.
 import re
 import types
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, Iterator, NamedTuple, Sequence, Tuple
+from typing import Any, Dict, Iterable, NamedTuple, Sequence
 
 import builddsl
 
@@ -196,7 +195,7 @@ class CurrentDirectoryProjectFinder(ProjectFinder):
         for runner in self.script_runners:
             script = runner.find_script(directory)
             if script is not None:
-                return runner, script
+                return ProjectInfo(script, runner)
 
         return None
 
@@ -225,7 +224,7 @@ class GitAwareProjectFinder(ProjectFinder):
         self.home_boundary = home_boundary or Path("~").expanduser().parent.absolute()
 
     def find_project(self, directory: Path) -> "ProjectInfo | None":
-        highest_script: ProjectInfo | None = None
+        highest_script: "ProjectInfo | None" = None
         directory = directory.absolute()
         while directory != Path(directory.root):
             # If we're in any directory that could be a home directory, we stop searching.
