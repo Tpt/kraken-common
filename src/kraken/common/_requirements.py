@@ -265,7 +265,7 @@ def deprecated_get_requirement_spec_from_file_header(file: "TextIO | Path") -> "
         return (
             RequirementSpec.from_args(requirements)
             .with_pythonpath(pythonpath)
-            .with_pythonpath(DEFAULT_BUILD_SUPPORT_FOLDER)
+            .with_pythonpath([DEFAULT_BUILD_SUPPORT_FOLDER])
         )
 
     return None
