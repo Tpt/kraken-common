@@ -25,6 +25,13 @@ def test__parse_requirement__can_handle_local_requirements() -> None:
     assert parse_requirement("kraken-std@.") == LocalRequirement("kraken-std", Path("."))
     assert parse_requirement("abc @ ./abc") == LocalRequirement("abc", Path("./abc"))
     assert parse_requirement("abc@/module/at/abc") == LocalRequirement("abc", Path("/module/at/abc"))
+    assert parse_requirement("abc[foo]@/module/at/abc") == LocalRequirement("abc", Path("/module/at/abc"), "[foo]")
+
+
+def test__local_requirements__to_args() -> None:
+    assert LocalRequirement("abc", Path("."), "[foo]").to_args(Path("/test")) == ["abc[foo]@file:///test"]
+    assert LocalRequirement("abc", Path("/foo"), "[foo]").to_args(Path("/test")) == ["abc[foo]@file:///foo"]
+    assert LocalRequirement("abc", Path("/foo")).to_args(Path()) == ["abc@file:///foo"]
 
 
 def test__deprecated_get_requirement_spec_from_file_header() -> None:

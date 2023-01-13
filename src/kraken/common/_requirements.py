@@ -21,11 +21,11 @@ def parse_requirement(value: str) -> "PipRequirement | LocalRequirement":
     Parse a string as a requirement. Return a :class:`PipRequirement` or :class:`LocalRequirement`.
     """
 
-    match = re.match(r"(.+?)@(.+)", value)
+    match = re.match(r"([a-zA-Z0-9-_.]+)([^@]*)@(.+)", value)
     if match:
-        return LocalRequirement(match.group(1).strip(), Path(match.group(2).strip()))
+        return LocalRequirement(match.group(1).strip(), Path(match.group(3).strip()), match.group(2).strip() or None)
 
-    match = re.match(r"([\w\d\-\_]+)(.*)", value)
+    match = re.match(r"([a-zA-Z0-9-_.]+)(.*)", value)
     if match:
         return PipRequirement(match.group(1), match.group(2).strip() or None)
 
@@ -48,7 +48,7 @@ class PipRequirement(Requirement):
     """Represents a Pip requriement."""
 
     name: str
-    spec: "str | None"
+    spec: "str | None" = None
 
     def __str__(self) -> str:
         return f"{self.name}{self.spec or ''}"
@@ -65,12 +65,13 @@ class LocalRequirement(Requirement):
 
     name: str
     path: Path
+    spec: "str | None" = None
 
     def __str__(self) -> str:
-        return f"{self.name}@{self.path}"
+        return f"{self.name}{self.spec or ''}@{self.path}"
 
     def to_args(self, base_dir: Path) -> List[str]:
-        return [str((base_dir / self.path if base_dir else self.path).absolute())]
+        return [f"{self.name}{self.spec or ''}@{(base_dir / self.path if base_dir else self.path).absolute().as_uri()}"]
 
 
 @dataclasses.dataclass(frozen=True)

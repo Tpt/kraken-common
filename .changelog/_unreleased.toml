@@ -1,0 +1,5 @@
+[[changelog.entries]]
+id = "de9b2511-4259-48e3-98eb-62860e75ab88"
+type = "improvement"
+description = "Allow extra features in local requirements"
+author = "@Tpt"
