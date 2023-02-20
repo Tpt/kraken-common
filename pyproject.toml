@@ -20,15 +20,12 @@ keywords = []
 # Repository = ""
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 builddsl = "^1.0.0"
-dataclasses = { version = "^0.6", python = "<3.7" }
 setuptools = "*"
-typing-extensions = ">=3.0.0.0"
-
-# Allow older versions for Python 3.6 compatibility.
-tomli = ">=1.0.0,<3.0.0"
-tomli_w = ">=0.4.0,<2.0.0"
+tomli = "^2.0"
+tomli_w = "^1.0"
+typing-extensions = "^4.5.0"
 
 [tool.poetry.dev-dependencies]
 black = "*"
@@ -37,7 +34,6 @@ isort = "*"
 mypy = "*"
 pytest = "*"
 termcolor = "*"
-types-dataclasses = { version = "^0.6.6", python = "<3.7" }
 types-setuptools = "*"
 types-termcolor = "*"
 
@@ -56,7 +52,7 @@ flake8 = "flake8 src/"
 fmt = "black src/ && isort src/"
 
 [tool.mypy]
-python_version = "3.6"
+python_version = "3.7"
 explicit_package_bases = true
 mypy_path = ["src"]
 namespace_packages = true

@@ -1,0 +1,6 @@
+[[entries]]
+id = "17820c54-08bc-4023-9a45-d9efb25037d7"
+type = "breaking change"
+description = "Drops Python 3.6 support"
+author = "@Tpt"
+pr = "https://github.com/kraken-build/kraken-common/pull/3"
